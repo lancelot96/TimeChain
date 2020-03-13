@@ -48,7 +48,7 @@ public class HTTPService {
             context.addServlet(new ServletHolder(new AddPeerServlet()), "/addPeer");
             //context.addServlet(new ServletHolder(new TimeCenterServlet()), "/setTC");
 
-            context.addServlet(new ServletHolder(new RepGetServlet()), "/proxyIP");
+            context.addServlet(new ServletHolder(new RepGetServlet()), "/proxy_ip");
             context.addServlet(new ServletHolder(new NewBlkGetServlet()), "/latest_blk");
             context.addServlet(new ServletHolder(new LastConsensusTime()), "/consensus_time");
             context.addServlet(new ServletHolder(new GetLatestTime()), "/sync_time");

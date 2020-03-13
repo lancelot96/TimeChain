@@ -1,13 +1,14 @@
 package com.dizsun.timechain.component;
 
-import com.dizsun.timechain.service.PersistenceService;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
+
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.Objects;
 
 public class PubPriKey {
@@ -54,7 +55,8 @@ public class PubPriKey {
             privateKey = keyPair.getPrivate();
 
             byte[] publicKeyBytes = publicKey.getEncoded();
-            publicKeyBase64 = new BASE64Encoder().encode(publicKeyBytes);
+//            publicKeyBase64 = new BASE64Encoder().encode(publicKeyBytes);
+            publicKeyBase64 = Base64.getEncoder().encodeToString(publicKeyBytes);
 
             //byte[] privateKeyBytes = privateKey.getEncoded();
             //this.privateKeyBase64 = new BASE64Encoder().encode(privateKeyBytes);
@@ -140,8 +142,8 @@ public class PubPriKey {
             out.close();
 
 //            byte[] b1 = cipher.doFinal(b);
-            BASE64Encoder encoder = new BASE64Encoder();
-            return encoder.encode(encryptedData);
+//            BASE64Encoder encoder = new BASE64Encoder();
+            return Base64.getEncoder().encodeToString(encryptedData);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -161,8 +163,9 @@ public class PubPriKey {
             /** 得到Cipher对象对已用私钥加密的数据进行RSA解密 */
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, publicKey);
-            BASE64Decoder decoder = new BASE64Decoder();
-            byte[] encryptedData = decoder.decodeBuffer(cryptograph);
+//            BASE64Decoder decoder = new BASE64Decoder();
+//            byte[] encryptedData = decoder.decodeBuffer(cryptograph);
+            byte[] encryptedData = Base64.getDecoder().decode(cryptograph);
             /** 执行解密操作 */
 
             int inputLen = encryptedData.length;
@@ -195,12 +198,14 @@ public class PubPriKey {
 
     public String decrypt(String _publicKeyBase64, String cryptograph) {
         try {
-            BASE64Decoder decoder = new BASE64Decoder();
-            byte[] buffer = decoder.decodeBuffer(_publicKeyBase64);
+//            BASE64Decoder decoder = new BASE64Decoder();
+//            byte[] buffer = decoder.decodeBuffer(_publicKeyBase64);
+            byte[] buffer = Base64.getDecoder().decode(_publicKeyBase64);
             Key key = bytes2PK(buffer);
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, key);
-            byte[] encryptedData = decoder.decodeBuffer(cryptograph);
+//            byte[] encryptedData = decoder.decodeBuffer(cryptograph);
+            byte[] encryptedData = Base64.getDecoder().decode(cryptograph);
             /** 执行解密操作 */
 
             int inputLen = encryptedData.length;

@@ -27,6 +27,8 @@ public class R {
     /**
      * config文件中的默认值，如果无法从properties文件读取相应配置，则取此默认值
      */
+    // 默认时间格式
+    public static final String NTP_DATE_FORMAT = "yyyy MM dd HH:mm:ss.SSS";
     // 默认时间中心的ip
     public static final String DEFAULT_TIME_CENTER_IP = "127.0.0.1";
     // 时间中心ip
