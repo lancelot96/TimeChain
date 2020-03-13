@@ -3,6 +3,7 @@ package com.dizsun.timechain.service;
 import com.alibaba.fastjson.JSON;
 import com.dizsun.timechain.component.ACK;
 import com.dizsun.timechain.component.Block;
+import com.dizsun.timechain.constant.Config;
 import com.dizsun.timechain.util.CryptoUtil;
 import com.dizsun.timechain.constant.R;
 
@@ -20,6 +21,8 @@ public class BlockService {
     //TODO 恢复数据库的作用
     //    private SQLUtil sqlUtil;
     private List<Block> blockChain;
+    private Config config = Config.getInstance();
+    private PersistenceService persistenceService = PersistenceService.getInstance();
 
     private BlockService() {
     }
@@ -34,8 +37,11 @@ public class BlockService {
 
     public void init() {
 //        this.sqlUtil=new SQLUtil();
-        this.blockChain = new ArrayList<>();
-        blockChain.add(this.getFirstBlock());
+        blockChain = persistenceService.blockchainUpload(config.getLocalHost());
+        if (blockChain == null) {
+            this.blockChain = new ArrayList<>();
+            blockChain.add(this.getFirstBlock());
+        }
 
 //        List<Block> dbBlocks = sqlUtil.queryBlocks();
 //        List<Block> dbBlocks = new ArrayList<>();
@@ -68,7 +74,7 @@ public class BlockService {
      * @return
      */
     private Block getFirstBlock() {
-        return new Block(1, "0", 0, "Hello Block", "1db6aa3c81dc4b05a49eaed6feba99ed4ef07aa418d10bfbbc12af68cab6fb2a", 0);
+        return new Block(1, "0", 0, "Hello Block", "1db6aa3c81dc4b05a49eaed6feba99ed4ef07aa418d10bfbbc12af68cab6fb2a", 0, "0.0.0.0");
     }
 
     /**
@@ -77,13 +83,13 @@ public class BlockService {
      * @param blockData
      * @return
      */
-    public void generateNextBlock(String blockData) {
+    public void generateNextBlock(String blockData, String localHost) {
         Block previousBlock = this.getLatestBlock();
         int nextIndex = previousBlock.getIndex() + 1;
         long nextTimestamp = System.currentTimeMillis();
         String nextHash = calculateHash(nextIndex, previousBlock.getHash(), nextTimestamp, blockData);
         //int proof=createProofOfWork(previousBlock.getProof(),previousBlock.getHash());
-        Block newBlock = new Block(nextIndex, previousBlock.getHash(), nextTimestamp, blockData, nextHash,R.getViewNumber());
+        Block newBlock = new Block(nextIndex, previousBlock.getHash(), nextTimestamp, blockData, nextHash, R.getViewNumber(), localHost);
         blockChain.add(newBlock);
         R.endConsensus();
     }
@@ -98,6 +104,7 @@ public class BlockService {
 
     /**
      * 向链上添加新区块
+     * 并设置时间中心 ip
      * @param newBlock
      */
     public void addBlock(Block newBlock) {
@@ -106,6 +113,11 @@ public class BlockService {
             blockChain.add(newBlock);
             R.setViewNumber(newBlock.getVN());
             R.endConsensus();
+            if (config.getLocalHost().equals(newBlock.getCreater())) { // 如果当前节点为代表节点，则ntp请求ip设为授时中心地址
+                config.setTimeCenterIp(R.TIME_CENTER_IP);
+            } else {
+                config.setTimeCenterIp(newBlock.getCreater()); // 否则设置ntp请求ip为代表节点地址
+            }
         }
     }
 
@@ -119,6 +131,11 @@ public class BlockService {
 //            sqlUtil.replaceChain(newBlocks);
             blockChain = newBlocks;
             R.setViewNumber(newBlocks.get(newBlocks.size() - 1).getVN());
+            if (config.getLocalHost().equals(newBlocks.get(newBlocks.size() - 1).getCreater())) {
+                config.setTimeCenterIp(R.TIME_CENTER_IP);
+            } else {
+                config.setTimeCenterIp(newBlocks.get(newBlocks.size() - 1).getCreater());
+            }
         } else {
             System.out.println("收到的区块链为无效链");
         }
@@ -158,8 +175,6 @@ public class BlockService {
         }
         return true;
     }
-
-
 
     /**
      * 验证区块链是否合法

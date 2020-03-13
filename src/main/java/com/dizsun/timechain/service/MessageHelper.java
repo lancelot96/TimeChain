@@ -46,7 +46,6 @@ public class MessageHelper {
         return JSON.toJSONString(new Message(R.QUERY_ALL_BLOCKS, JSON.toJSONString(blockService.getBlockChain()), config.getLocalHost(), R.getAndIncrementMessageId()));
     }
 
-
     public String queryLatestBlock() {
         return JSON.toJSONString(new Message(R.QUERY_LATEST_BLOCK, config.getLocalHost(), R.getAndIncrementMessageId()));
     }
@@ -80,8 +79,8 @@ public class MessageHelper {
         int vn = R.getViewNumber();
         ACK ack = new ACK();
         ack.setVN(vn);
-        ack.setPublicKey(rsaUtil.getPublicKeyBase64());
-        ack.setSign(rsaUtil.encrypt(rsaUtil.getPublicKeyBase64() + vn));
+        ack.setPublicKey(rsaUtil.getPubPriKey().getPublicKeyBase64());
+        ack.setSign(rsaUtil.getPubPriKey().encrypt(rsaUtil.getPubPriKey().getPublicKeyBase64() + vn));
         return JSON.toJSONString(new Message(R.RESPONSE_ACK, JSON.toJSONString(ack), config.getLocalHost(), R.getAndIncrementMessageId()));
     }
 

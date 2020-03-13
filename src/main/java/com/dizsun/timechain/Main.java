@@ -2,9 +2,11 @@ package com.dizsun.timechain;
 
 import com.dizsun.timechain.constant.Broadcaster;
 import com.dizsun.timechain.constant.Config;
+import com.dizsun.timechain.constant.R;
 import com.dizsun.timechain.service.*;
 import com.dizsun.timechain.util.*;
 import org.apache.log4j.Logger;
+import com.dizsun.timechain.service.PersistenceService;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,20 +30,24 @@ public class Main {
             config.setTimeCenterIp(args[2]);
             config.setMainNode(args[3]);
             logger.info("config inited");
-        } else if (args.length == 8) {
+        } else if (args.length == 6) {
             config.setHttpPort(Integer.parseInt(args[0]));
             config.setP2pPort(Integer.parseInt(args[1]));
-            config.setTimeCenterListenPort(Integer.parseInt(args[2]));
-            config.setNtpListenPort(Integer.parseInt(args[3]));
-            config.setIndex(Integer.parseInt(args[4]));
-            config.setLocalHost(args[5]);
-            config.setTimeCenterIp(args[6]);
-            config.setMainNode(args[7]);
+//            config.setTimeCenterListenPort(Integer.parseInt(args[2]));
+//            config.setNtpListenPort(Integer.parseInt(args[3]));
+//            config.setIndex(Integer.parseInt(args[4]));
+            config.setIndex(Integer.parseInt(args[2]));
+//            config.setLocalHost(args[5]);
+            config.setLocalHost(args[3]);
+//            config.setTimeCenterIp(args[6]);
+            config.setTimeCenterIp(args[4]);
+//            config.setMainNode(args[7]);
+            config.setMainNode(args[5]);
         } else {
             logger.error("传入参数错误，应传入参数为：\n" +
                     "  1.无参数\n" +
-                    "  2.index,localHost,timeCenterIp,mainNode\n" +
-                    "  3.httpPort,p2pPort,timeCenterPort,ntpPort,index,localHost,timeCenterIp,mainNode");
+                    "  2.index, localHost, timeCenterIp, mainNode\n" +
+                    "  3.httpPort, p2pPort, index, localHost, timeCenterIp, mainNode");
             System.exit(0);
         }
 //        打印输出参数
@@ -55,9 +61,12 @@ public class Main {
 //        logger.info(config.getTimeCenterListenPort());
         //初始化并启动各个组件
         try {
+            CloseHook closeHook = new CloseHook();
             LogUtil.init(config.getIndex());
-            NTPService ntpService = new NTPService();
-            ntpService.start();
+//            NTPService ntpService = new NTPService();
+//            ntpService.start();
+            NTPServer ntpServer = new NTPServer();
+            ntpServer.start();
             Broadcaster broadcaster = new Broadcaster();
             P2PService p2pService = P2PService.getInstance();
             broadcaster.subscribe(p2pService);
@@ -74,9 +83,7 @@ public class Main {
             httpService.initHTTPServer(config.getHttpPort());
         } catch (Exception e) {
             logger.error("startup is error:" + e.getMessage());
-
         }
-
     }
 }
 

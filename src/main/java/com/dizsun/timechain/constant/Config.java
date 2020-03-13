@@ -7,15 +7,17 @@ import java.util.Properties;
  * 定义了各种初始化参数的获取方法
  */
 public class Config {
-    private Properties properties;
-    private String localHost;
-    private String timeCenterIp;
-    private int ntpListenPort = -1;
-    private int timeCenterListenPort = -1;
-    private int httpPort = -1;
-    private int p2pPort = -1;
-    private int index = -1;
-    private String mainNode;
+
+    private Properties properties;    // 线程安全，装载.properties文件中的键值对配置信息
+    private String localHost;    // 本地ip
+    private String timeCenterIp;    // 时间中心的ip
+    private int ntpListenPort = -1;    // 每个节点ntp服务的端口
+    private int ntpReqTimeout = -1;    // NTP请求超时时间
+//    private int timeCenterListenPort = -1;    // 时间中心的端口
+    private int httpPort = -1;    // http监听端口
+    private int p2pPort = -1;    // p2p监听端口
+    private int index = -1;    // 节点索引号
+    private String mainNode;    // 主节点ip
 
     public void setLocalHost(String localHost) {
         this.localHost = localHost;
@@ -25,13 +27,13 @@ public class Config {
         this.timeCenterIp = timeCenterIp;
     }
 
-    public void setNtpListenPort(int ntpListenPort) {
-        this.ntpListenPort = ntpListenPort;
-    }
+//    public void setNtpListenPort(int ntpListenPort) {
+//        this.ntpListenPort = ntpListenPort;
+//    }
 
-    public void setTimeCenterListenPort(int timeCenterListenPort) {
-        this.timeCenterListenPort = timeCenterListenPort;
-    }
+//    public void setTimeCenterListenPort(int timeCenterListenPort) {
+//        this.timeCenterListenPort = timeCenterListenPort;
+//    }
 
     public void setHttpPort(int httpPort) {
         this.httpPort = httpPort;
@@ -56,7 +58,7 @@ public class Config {
     public String getLocalHost() {
         if (localHost == null) {
             String local_host = properties.getProperty("local_host");
-            if (local_host == null||local_host.isEmpty()) {
+            if (local_host == null || local_host.isEmpty()) {
                 localHost = R.DEFAULT_LOCAL_HOST;
             }else {
                 localHost = local_host;
@@ -68,7 +70,7 @@ public class Config {
     public String getTimeCenterIp() {
         if (timeCenterIp == null) {
             String time_center_ip = properties.getProperty("time_center_ip");
-            if (time_center_ip == null||time_center_ip.isEmpty()) {
+            if (time_center_ip == null || time_center_ip.isEmpty()) {
                 timeCenterIp = R.DEFAULT_TIME_CENTER_IP;
             }else {
                 timeCenterIp = time_center_ip;
@@ -88,16 +90,27 @@ public class Config {
         return ntpListenPort;
     }
 
-    public int getTimeCenterListenPort() {
-        if (timeCenterListenPort == -1) {
+    public int getNtpReqTimeout() {
+        if (ntpReqTimeout == -1) {
             try {
-                timeCenterListenPort = Integer.parseInt(properties.getProperty("time_center_listen_port"));
+                ntpReqTimeout = Integer.parseInt(properties.getProperty("ntp_request_timeout"));
             } catch (NumberFormatException e) {
-                timeCenterListenPort = R.DEFAULT_TIME_CENTER_LISTEN_PORT;
+                ntpReqTimeout = R.DEFAULT_NTP_REQUEST_TIMEOUT;
             }
         }
-        return timeCenterListenPort;
+        return ntpReqTimeout;
     }
+
+//    public int getTimeCenterListenPort() {
+//        if (timeCenterListenPort == -1) {
+//            try {
+//                timeCenterListenPort = Integer.parseInt(properties.getProperty("time_center_listen_port"));
+//            } catch (NumberFormatException e) {
+//                timeCenterListenPort = R.DEFAULT_TIME_CENTER_LISTEN_PORT;
+//            }
+//        }
+//        return timeCenterListenPort;
+//    }
 
     public int getHttpPort() {
         if (httpPort == -1) {
@@ -135,7 +148,7 @@ public class Config {
     public String getMainNode() {
         if (mainNode == null) {
             String main_node = properties.getProperty("main_node");
-            if (main_node == null||main_node.isEmpty()) {
+            if (main_node == null || main_node.isEmpty()) {
                 mainNode = R.DEFAULT_MAIN_NODE;
             }else {
                 mainNode = main_node;
@@ -161,7 +174,7 @@ public class Config {
             if (file.canRead()) {
                 in = new BufferedInputStream(new FileInputStream(file));
             } else {
-                in = Config.class.getClassLoader().getResourceAsStream(filePath);
+                in = Config.class.getClassLoader().getResourceAsStream(filePath);    // 类加载器读取配置文件
             }
             if (in != null) {
                 properties.load(in);
@@ -180,7 +193,6 @@ public class Config {
             }
         }
     }
-
 
     private static class Holder {
         private static final Config config = new Config();

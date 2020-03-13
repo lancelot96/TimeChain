@@ -12,6 +12,7 @@ public class Block implements Serializable {
     private String data;
     private String hash;
     private int VN;
+    private String creater;
 
     public Block() {
     }
@@ -24,13 +25,14 @@ public class Block implements Serializable {
 //        this.hash = hash;
 //    }
 
-    public Block(int index, String previousHash, long timestamp, String data, String hash, int VN) {
+    public Block(int index, String previousHash, long timestamp, String data, String hash, int VN, String creater) {
         this.index = index;
         this.previousHash = previousHash;
         this.timestamp = timestamp;
         this.data = data;
         this.hash = hash;
         this.VN=VN;
+        this.creater = creater;
     }
     public Block(int index, String previousHash, long timestamp, String data, String hash) {
         this.index = index;
@@ -100,12 +102,15 @@ public class Block implements Serializable {
         this.hash = hash;
     }
 
-
     public int getVN() {
         return VN;
     }
 
     public void setVN(int VN) {
         this.VN = VN;
+    }
+
+    public String getCreater() {
+        return creater;
     }
 }

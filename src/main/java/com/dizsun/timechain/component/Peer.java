@@ -9,8 +9,8 @@ import org.java_websocket.WebSocket;
 public class Peer {
     private String ip;
     private WebSocket webSocket;
-    private int stability=0;    //此节点和本节点之间的稳定系数值
-    private double delay=0;
+    private int stability = 0;    //此节点和本节点之间的稳定系数值
+    private double delay = 0;
 
     public Peer() {
     }

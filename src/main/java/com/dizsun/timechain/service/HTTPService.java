@@ -2,7 +2,10 @@ package com.dizsun.timechain.service;
 
 
 import com.alibaba.fastjson.JSON;
+
+import com.dizsun.timechain.constant.Config;
 import com.dizsun.timechain.util.DateUtil;
+import com.dizsun.timechain.util.LogUtil;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -23,13 +26,16 @@ public class HTTPService {
     private BlockService blockService;
     private PeerService peerService;
 
+    private Config config = Config.getInstance();
+    private DateUtil dateUtil = DateUtil.getInstance();
+
     public HTTPService() {
 
     }
 
     public void initHTTPServer(int port) {
         this.blockService = BlockService.getInstance();
-        this.peerService=PeerService.getInstance();
+        this.peerService = PeerService.getInstance();
         try {
             Server server = new Server(port);
             logger.info("listening http port on: " + port);
@@ -42,10 +48,50 @@ public class HTTPService {
             context.addServlet(new ServletHolder(new AddPeerServlet()), "/addPeer");
             //context.addServlet(new ServletHolder(new TimeCenterServlet()), "/setTC");
 
+            context.addServlet(new ServletHolder(new RepGetServlet()), "/proxyIP");
+            context.addServlet(new ServletHolder(new NewBlkGetServlet()), "/latest_blk");
+            context.addServlet(new ServletHolder(new LastConsensusTime()), "/consensus_time");
+            context.addServlet(new ServletHolder(new GetLatestTime()), "/sync_time");
+
             server.start();
             server.join();
         } catch (Exception e) {
             logger.error("init http server is error:" + e.getMessage());
+        }
+    }
+
+    // 时间同步，非代表节点通过代表节点向授时中心获取最新时间
+    private class GetLatestTime extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().println(JSON.toJSONString(dateUtil.getTimeFromRC()));
+        }
+    }
+
+    // 上一次共识时间
+    private class LastConsensusTime extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().println(JSON.toJSONString(LogUtil.readLastLog(LogUtil.CONSENSUS)));
+        }
+    }
+
+    // 最新块内容获取
+    private class NewBlkGetServlet extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().println(JSON.toJSONString(blockService.getLatestBlock()));
+        }
+    }
+
+    private class RepGetServlet extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().println(JSON.toJSONString(blockService.getLatestBlock().getCreater()));
         }
     }
 

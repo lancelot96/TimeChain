@@ -43,6 +43,8 @@ public class P2PService implements ISubscriber {
     private ViewState viewState = ViewState.Running;
     private List<ACK> acks;
 
+    private long consensusTime = 0;
+
     private static class Holder {
         private static P2PService p2pService = new P2PService();
     }
@@ -61,7 +63,7 @@ public class P2PService implements ISubscriber {
         this.acks = new ArrayList<>();
 //        this.VN = 0;
         this.rsaUtil = RSAUtil.getInstance();
-        rsaUtil.init();
+        rsaUtil.init(config.getLocalHost());
         this.peerService = PeerService.getInstance();
         peerService.init();
         this.messageHelper = MessageHelper.getInstance();
@@ -175,7 +177,7 @@ public class P2PService implements ISubscriber {
                         logger.info("Check if the conditions for writing a block are met：" + (acks.size() >= 2 * N));
                         if (acks.size() >= 2 * N) {
                             R.getBlockWriteLock().lock();
-                            writeBlock();
+                            writeBlock(config.getLocalHost());
                             peerService.broadcast(messageHelper.responseLatestBlock());
                             viewState = ViewState.Running;
                             R.getBlockWriteLock().unlock();
@@ -206,6 +208,7 @@ public class P2PService implements ISubscriber {
 
                     }
                     break;
+
             }
         } catch (Exception e) {
             logger.info("An error occurred while processing the message:" + e.getMessage());
@@ -228,9 +231,9 @@ public class P2PService implements ISubscriber {
     /**
      * 生成新区块
      */
-    private void writeBlock() {
+    private void writeBlock(String localHost) {
         viewState = ViewState.WritingBlock;
-        blockService.generateNextBlock(blockService.getJSONData(acks));
+        blockService.generateNextBlock(blockService.getJSONData(acks), localHost);
         logger.info("new block generated successfully");
     }
 
@@ -253,7 +256,7 @@ public class P2PService implements ISubscriber {
         if (ack.getVN() != R.getViewNumber()) {
             return false;
         }
-        String sign = rsaUtil.decrypt(ack.getPublicKey(), ack.getSign());
+        String sign = rsaUtil.getPubPriKey().decrypt(ack.getPublicKey(), ack.getSign());
         if (!sign.equals(ack.getPublicKey() + ack.getVN()))
             return false;
         return true;

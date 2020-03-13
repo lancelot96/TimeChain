@@ -118,7 +118,7 @@ public class PeerService implements ICheckDelay {
     }
 
     /**
-     * 判断节点列表是否包含改节点
+     * 判断节点列表是否包含该节点
      * @param host
      * @return
      */

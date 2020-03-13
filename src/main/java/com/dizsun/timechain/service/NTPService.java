@@ -35,7 +35,6 @@ public class NTPService extends Thread {
             }
         }
     }
-
     private static class NTPRequestHandler implements Runnable {
         private Socket mClientSocket;
 

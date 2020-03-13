@@ -18,7 +18,8 @@ public class Broadcaster {
     public Broadcaster() {
         timer = new Timer();
         subscribers = new ArrayList<>();
-        dateUtil = DateUtil.newDataUtil();
+        dateUtil = DateUtil.getInstance();
+        dateUtil.init();
     }
 
     /**
@@ -28,22 +29,22 @@ public class Broadcaster {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if(dateUtil.getCurrentMinute()%5==1){
+                if(dateUtil.getCurrentMinute() % 5 == 1){
                     for (ISubscriber s : subscribers) {
                         s.doPerHour45();
                     }
                 }
-                else if(dateUtil.getCurrentMinute()%5==2){
+                else if(dateUtil.getCurrentMinute() % 5 == 2){
                     for (ISubscriber s : subscribers) {
                         s.doPerHour59();
                     }
                 }
-                else if(dateUtil.getCurrentMinute()%5==3){
+                else if(dateUtil.getCurrentMinute() % 5 == 3){
                     for (ISubscriber s : subscribers) {
                         s.doPerHour00();
                     }
                 }
-                else if(dateUtil.getCurrentMinute()%5==4){
+                else if(dateUtil.getCurrentMinute() % 5 == 4){
                     for (ISubscriber s : subscribers) {
                         s.doPerHour01();
                     }
