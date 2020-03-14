@@ -11,7 +11,8 @@ public class CloseHook {
         @Override
         public void run() {
             //区块链持久化
-            if(PersistenceService.getInstance().blockchainPersistence(Config.getInstance().getLocalHost(), BlockService.getInstance().getBlockChain()))
+            Config config = Config.getInstance();
+            if(PersistenceService.getInstance().blockchainPersistence(config.getLocalHost() + "." + config.getP2pPort(), BlockService.getInstance().getBlockChain()))
                 System.out.println("区块链持久化成功！");
             else
                 System.out.println("区块链持久化失败！");
