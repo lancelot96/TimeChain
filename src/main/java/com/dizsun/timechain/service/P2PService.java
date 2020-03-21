@@ -63,7 +63,7 @@ public class P2PService implements ISubscriber {
         this.acks = new ArrayList<>();
 //        this.VN = 0;
         this.rsaUtil = RSAUtil.getInstance();
-        rsaUtil.init(config.getLocalHost());
+        rsaUtil.init(config.getLocalHost() + "." + config.getP2pPort());
         this.peerService = PeerService.getInstance();
         peerService.init();
         this.messageHelper = MessageHelper.getInstance();

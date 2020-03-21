@@ -37,7 +37,7 @@ public class BlockService {
 
     public void init() {
 //        this.sqlUtil=new SQLUtil();
-        blockChain = persistenceService.blockchainUpload(config.getLocalHost());
+        blockChain = persistenceService.blockchainUpload(config.getLocalHost() + "." + config.getP2pPort());
         if (blockChain == null) {
             this.blockChain = new ArrayList<>();
             blockChain.add(this.getFirstBlock());
