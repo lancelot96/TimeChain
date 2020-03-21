@@ -4,6 +4,7 @@ package com.dizsun.timechain.service;
 import com.alibaba.fastjson.JSON;
 
 import com.dizsun.timechain.constant.Config;
+import com.dizsun.timechain.constant.R;
 import com.dizsun.timechain.util.DateUtil;
 import com.dizsun.timechain.util.LogUtil;
 import org.apache.log4j.Logger;
@@ -74,7 +75,8 @@ public class HTTPService {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             resp.setCharacterEncoding("UTF-8");
-            resp.getWriter().println(JSON.toJSONString(LogUtil.readLastLog(LogUtil.CONSENSUS)));
+//            resp.getWriter().println(JSON.toJSONString(LogUtil.readLastLog(LogUtil.CONSENSUS)));
+            resp.getWriter().println(JSON.toJSONString(R.getDuration()));
         }
     }
 

@@ -20,7 +20,7 @@ public class Main {
         Config config = Config.getInstance();
         config.init();
         /**
-         *  默认为从配置文件或者R中寻找参数,从命令行传入的参数则可以覆盖原有的数据
+         *  默认为从配置文件config.properties或者R.java中寻找参数,从命令行传入的参数则可以覆盖原有的数据
          */
         if (args == null || args.length == 0) {
             //使用配置文件或者默认值
@@ -62,7 +62,7 @@ public class Main {
         //初始化并启动各个组件
         try {
             CloseHook closeHook = new CloseHook();
-            LogUtil.init(config.getIndex());
+//            LogUtil.init(config.getIndex());
 //            NTPService ntpService = new NTPService();
 //            ntpService.start();
             NTPServer ntpServer = new NTPServer();

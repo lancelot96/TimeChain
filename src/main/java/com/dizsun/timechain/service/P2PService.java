@@ -312,7 +312,7 @@ public class P2PService implements ISubscriber {
         R.getBlockWriteLock().unlock();
         R.getAndIncrementViewNumber();
         stabilityValue = 128;
-        peerService.updateDelay();
+//        peerService.updateDelay();
         peerService.regularizeSI();
     }
 

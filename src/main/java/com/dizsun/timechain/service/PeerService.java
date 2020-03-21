@@ -246,11 +246,11 @@ public class PeerService implements ICheckDelay {
     /**
      * 更新与各节点之间的延迟
      */
-    public void updateDelay() {
-        peersMap.forEach((k, v) -> {
-            new DelayHandler(this, v).start();
-        });
-    }
+//    public void updateDelay() {
+//        peersMap.forEach((k, v) -> {
+//            new DelayHandler(this, v).start();
+//        });
+//    }
 
 
     @Override
@@ -263,42 +263,41 @@ public class PeerService implements ICheckDelay {
     /**
      * 延时测试机，向对方发送一个消息并等待回应，计算延迟
      */
-    private class DelayHandler extends Thread {
-        private ICheckDelay context;
-        private Peer peer;
-        private long t1;
-        private long t2;
-        private Double delay;
-
-        public DelayHandler(ICheckDelay context, Peer peer) {
-            this.context = context;
-            this.peer = peer;
-        }
-
-        @Override
-        public void run() {
-            try {
-                Socket client = new Socket(InetAddress.getByName(peer.getIp()), Config.getInstance().getNtpListenPort());
-                DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-                DataInputStream dis = new DataInputStream(client.getInputStream());
-                dos.writeBoolean(true);
-                t1 = System.nanoTime();
-                dos.flush();
-                if (dis.readBoolean()) {
-                    t2 = System.nanoTime();
-                }
-                delay = (t2 - t1) / 2.0;
-                context.checkDelay(peer, delay);
-                LogUtil.writeLog(peer.getIp() + ":" + delay.intValue(), LogUtil.NTP);
-                dis.close();
-                dos.close();
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-
+//    private class DelayHandler extends Thread {
+//        private ICheckDelay context;
+//        private Peer peer;
+//        private long t1;
+//        private long t2;
+//        private Double delay;
+//
+//        public DelayHandler(ICheckDelay context, Peer peer) {
+//            this.context = context;
+//            this.peer = peer;
+//        }
+//
+//        @Override
+//        public void run() {
+//            try {
+//                Socket client = new Socket(InetAddress.getByName(peer.getIp()), Config.getInstance().getNtpListenPort());
+//                DataOutputStream dos = new DataOutputStream(client.getOutputStream());
+//                DataInputStream dis = new DataInputStream(client.getInputStream());
+//                dos.writeBoolean(true);
+//                t1 = System.nanoTime();
+//                dos.flush();
+//                if (dis.readBoolean()) {
+//                    t2 = System.nanoTime();
+//                }
+//                delay = (t2 - t1) / 2.0;
+//                context.checkDelay(peer, delay);
+//                LogUtil.writeLog(peer.getIp() + ":" + delay.intValue(), LogUtil.NTP);
+//                dis.close();
+//                dos.close();
+//                client.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
+//    }
 }
 

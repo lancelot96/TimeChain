@@ -59,7 +59,7 @@ public class R {
     private static AtomicInteger viewNumber = new AtomicInteger(1);
     private static ReentrantReadWriteLock blockChainLock = new ReentrantReadWriteLock();    // 读写锁
     private static long startTime = 0;
-
+    private static long duration = 0;
 
     public static Long getMessageId() {
         return messageId.get();
@@ -95,8 +95,12 @@ public class R {
 
     public static void endConsensus() {
         if (startTime == 0) return;
-        long duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
-        LogUtil.writeLog("" + duration, LogUtil.CONSENSUS);
+        duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
+//        LogUtil.writeLog("" + duration, LogUtil.CONSENSUS);
         startTime = 0;
+    }
+
+    public static long getDuration() {
+        return duration;
     }
 }
