@@ -175,7 +175,7 @@ public class P2PService implements ISubscriber {
                         acks.add(tempACK);
                         logger.info("the number of received ack" + acks.size());
                         logger.info("Check if the conditions for writing a block are met：" + (acks.size() >= 2 * N));
-                        if (acks.size() >= 2 * N) {
+                        if (acks.size() >= 2 && acks.size() >= 2 * N) {
                             R.getBlockWriteLock().lock();
                             writeBlock(config.getLocalHost());
                             peerService.broadcast(messageHelper.responseLatestBlock());

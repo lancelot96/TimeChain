@@ -25,30 +25,30 @@ public class Broadcaster {
     /**
      * 这里默认5分钟一个周期,可以更改模值来改变周期
      */
-    public void broadcast() {
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(dateUtil.getCurrentMinute() % 5 == 1){
-                    for (ISubscriber s : subscribers) {
-                        s.doPerHour45();
-                    }
-                }
-                else if(dateUtil.getCurrentMinute() % 5 == 2){
-                    for (ISubscriber s : subscribers) {
-                        s.doPerHour59();
-                    }
-                }
-                else if(dateUtil.getCurrentMinute() % 5 == 3){
-                    for (ISubscriber s : subscribers) {
-                        s.doPerHour00();
-                    }
-                }
-                else if(dateUtil.getCurrentMinute() % 5 == 4){
-                    for (ISubscriber s : subscribers) {
-                        s.doPerHour01();
-                    }
-                }
+//    public void broadcast() {
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                if(dateUtil.getCurrentMinute() % 5 == 1){
+//                    for (ISubscriber s : subscribers) {
+//                        s.doPerHour45();
+//                    }
+//                }
+//                else if(dateUtil.getCurrentMinute() % 5 == 2){
+//                    for (ISubscriber s : subscribers) {
+//                        s.doPerHour59();
+//                    }
+//                }
+//                else if(dateUtil.getCurrentMinute() % 5 == 3){
+//                    for (ISubscriber s : subscribers) {
+//                        s.doPerHour00();
+//                    }
+//                }
+//                else if(dateUtil.getCurrentMinute() % 5 == 4){
+//                    for (ISubscriber s : subscribers) {
+//                        s.doPerHour01();
+//                    }
+//                }
 //                switch (dateUtil.getCurrentMinute()) {
 //                    case 0:
 //                    case 20:
@@ -81,8 +81,36 @@ public class Broadcaster {
 //                    default:
 //                        break;
 //                }
+//            }
+//        }, 1, 60*1000);
+//    }
+
+    public void broadcast() {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(dateUtil.getCurrentSecond() % 60 == 12){
+                    for (ISubscriber s : subscribers) {
+                        s.doPerHour45();
+                    }
+                }
+                else if(dateUtil.getCurrentMinute() % 60 == 24){
+                    for (ISubscriber s : subscribers) {
+                        s.doPerHour59();
+                    }
+                }
+                else if(dateUtil.getCurrentMinute() % 60 == 36){
+                    for (ISubscriber s : subscribers) {
+                        s.doPerHour00();
+                    }
+                }
+                else if(dateUtil.getCurrentMinute() % 60 == 48){
+                    for (ISubscriber s : subscribers) {
+                        s.doPerHour01();
+                    }
+                }
             }
-        }, 1, 60*1000);
+        }, 1, 15*1000);
     }
 
     public void subscribe(ISubscriber subscriber) {
