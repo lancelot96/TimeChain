@@ -94,17 +94,17 @@ public class Broadcaster {
                         s.doPerHour45();
                     }
                 }
-                else if(dateUtil.getCurrentMinute() % 60 == 24){
+                else if(dateUtil.getCurrentSecond() % 60 == 24){
                     for (ISubscriber s : subscribers) {
                         s.doPerHour59();
                     }
                 }
-                else if(dateUtil.getCurrentMinute() % 60 == 36){
+                else if(dateUtil.getCurrentSecond() % 60 == 36){
                     for (ISubscriber s : subscribers) {
                         s.doPerHour00();
                     }
                 }
-                else if(dateUtil.getCurrentMinute() % 60 == 48){
+                else if(dateUtil.getCurrentSecond() % 60 == 48){
                     for (ISubscriber s : subscribers) {
                         s.doPerHour01();
                     }
