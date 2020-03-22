@@ -59,6 +59,8 @@ public class PeerService implements ICheckDelay {
         String host = webSocket.getRemoteSocketAddress().getHostString();
 //        localHost = webSocket.getLocalSocketAddress().getHostString();
 
+        logger.info("host: " + host + ", localHost: " + localHost);
+
         if (contains(host) || host.equals(localHost)) {
             return false;
         }
