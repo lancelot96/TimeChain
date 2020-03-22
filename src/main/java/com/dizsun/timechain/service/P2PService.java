@@ -65,7 +65,7 @@ public class P2PService implements ISubscriber {
         this.rsaUtil = RSAUtil.getInstance();
         rsaUtil.init(config.getLocalHost() + "." + config.getP2pPort());
         this.peerService = PeerService.getInstance();
-        peerService.init();
+        peerService.init(config.getLocalHost());
         this.messageHelper = MessageHelper.getInstance();
         messageHelper.init();
         final WebSocketServer socket = new WebSocketServer(new InetSocketAddress(port)) {
@@ -173,8 +173,8 @@ public class P2PService implements ISubscriber {
                             stabilityValue -= 2;
                         }
                         acks.add(tempACK);
-                        logger.info("the number of received ack" + acks.size());
-                        logger.info("Check if the conditions for writing a block are met：" + (acks.size() >= 2 * N));
+                        logger.info("the number of received ack: " + acks.size());
+                        logger.info("Check if the conditions for writing a block are met：" + (acks.size() >= 2 && acks.size() >= 2 * N));
                         if (acks.size() >= 2 && acks.size() >= 2 * N) {
                             R.getBlockWriteLock().lock();
                             writeBlock(config.getLocalHost());

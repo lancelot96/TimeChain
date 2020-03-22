@@ -32,7 +32,6 @@ public class PeerService implements ICheckDelay {
     private MessageHelper messageHelper;
     private Logger logger = Logger.getLogger(PeerService.class);
 
-
     private PeerService() {
     }
 
@@ -44,10 +43,11 @@ public class PeerService implements ICheckDelay {
         return Holder.peerService;
     }
 
-    public void init() {
+    public void init(String localHost) {
         peersMap = new ConcurrentHashMap<>();
         messageHelper = MessageHelper.getInstance();
         peers = new ArrayList<>();
+        this.localHost = localHost;
     }
 
     /**
@@ -57,8 +57,12 @@ public class PeerService implements ICheckDelay {
      */
     public boolean addPeer(WebSocket webSocket) {
         String host = webSocket.getRemoteSocketAddress().getHostString();
-        localHost = webSocket.getLocalSocketAddress().getHostString();
-        if (contains(host) || host.equals(localHost)) return false;
+//        localHost = webSocket.getLocalSocketAddress().getHostString();
+
+        if (contains(host) || host.equals(localHost)) {
+            return false;
+        }
+
         Peer p = new Peer();
         p.setWebSocket(webSocket);
         p.setIp(host);

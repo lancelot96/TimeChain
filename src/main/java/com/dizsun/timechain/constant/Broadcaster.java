@@ -110,7 +110,7 @@ public class Broadcaster {
                     }
                 }
             }
-        }, 1, 15*1000);
+        }, 1, 1000);
     }
 
     public void subscribe(ISubscriber subscriber) {

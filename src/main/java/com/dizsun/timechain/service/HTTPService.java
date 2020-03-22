@@ -50,7 +50,7 @@ public class HTTPService {
             //context.addServlet(new ServletHolder(new TimeCenterServlet()), "/setTC");
 
             context.addServlet(new ServletHolder(new RepGetServlet()), "/proxy_ip");
-            context.addServlet(new ServletHolder(new NewBlkGetServlet()), "/latest_blk");
+            context.addServlet(new ServletHolder(new NewBlkGetServlet()), "/latest_block");
             context.addServlet(new ServletHolder(new LastConsensusTime()), "/consensus_time");
             context.addServlet(new ServletHolder(new GetLatestTime()), "/sync_time");
 
@@ -74,9 +74,12 @@ public class HTTPService {
     private class LastConsensusTime extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            String res = "{" +
+                    "Last Block Index=" + blockService.getLatestBlock().getIndex() +
+                    ", Last Consensus Time=" + R.getDuration() + "ms}";
             resp.setCharacterEncoding("UTF-8");
 //            resp.getWriter().println(JSON.toJSONString(LogUtil.readLastLog(LogUtil.CONSENSUS)));
-            resp.getWriter().println(JSON.toJSONString(R.getDuration()));
+            resp.getWriter().println(JSON.toJSONString(res));
         }
     }
 

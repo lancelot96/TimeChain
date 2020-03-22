@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.dizsun.timechain.component.Block;
 import com.dizsun.timechain.component.PubPriKey;
 import com.dizsun.timechain.constant.R;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import java.util.List;
  * 本类整合了区块链数据、公私密钥对数据的持久化与初始化读取操作
  */
 public class PersistenceService {
+    private Logger logger = Logger.getLogger(PersistenceService.class);
+
     private PersistenceService() {
     }
 
@@ -49,10 +52,10 @@ public class PersistenceService {
             PrintWriter myFile = new PrintWriter(resultFile);
             myFile.println(JSON.toJSON(tempBlockchain));
             resultFile.close();
-            System.out.println("PersistenceServiceInfo:" + uniqueName + "节点区块链数据文件保存成功！");
+            logger.info(uniqueName + "节点区块链数据文件保存成功！");
             return true;
         } catch(Exception e) {
-            System.out.println("PersistenceServiceInfo:" + uniqueName + "节点保存区块链数据出错！");
+            logger.error(uniqueName + "节点保存区块链数据出错！");
             e.printStackTrace();
             return false;
         }
@@ -105,10 +108,10 @@ public class PersistenceService {
             PrintWriter myFile = new PrintWriter(resultFile);
             myFile.println(JSON.toJSON(pubPriKey));
             resultFile.close();
-            System.out.println("PersistenceServiceInfo:" + uniqueName + "节点密钥数据文件保存成功！");
+            logger.info(uniqueName + "节点密钥数据文件保存成功！");
             return true;
         }catch(Exception e) {
-            System.out.println("PersistenceServiceInfo:" + uniqueName + "节点保存密钥数据出错！");
+            logger.error(uniqueName + "节点保存密钥数据出错！");
             e.printStackTrace();
             return false;
         }
@@ -155,24 +158,24 @@ public class PersistenceService {
                     if(line != null && !line.equals("")) {
                         List<Block> tempBlockchain = new ArrayList<>();
                         tempBlockchain.addAll(JSONArray.parseArray(line, Block.class));
-                        System.out.println("PersistenceServiceInfo: 从文件中读取区块链：" + JSON.toJSONString(tempBlockchain));
+                        logger.info("从文件中读取区块链：" + JSON.toJSONString(tempBlockchain));
                         return tempBlockchain;
                     }else {
-                        System.out.println("PersistenceServiceInfo: 文件中没有存有区块链。");
+                        logger.info("文件中没有存有区块链！");
                     }
                     reader.close();
                 }else {
                     //创建文件
                     dataFile.createNewFile(); //如果已经存在文件其实也不会重新覆盖，等于没操作。
-                    System.out.println("PersistenceServiceInfo: 无此文件！已在节点目录下创建！");
+                    logger.info("无此文件！已在节点目录下创建！");
                 }
             }else {
                 peerDir.mkdirs();
                 dataFile.createNewFile();
-                System.out.println("PersistenceServiceInfo: 无此路径！已创建目录及文件！");
+                logger.info("无此路径！已创建目录及文件！");
             }
         }catch(Exception e) {
-            System.out.println("PersistenceServiceInfo: 加载数据出错！");
+            logger.error("加载区块链数据出错！");
             e.printStackTrace();
         }
         return null;
@@ -225,24 +228,24 @@ public class PersistenceService {
                     String line=reader.readLine();
                     if(line != null && !line.equals("")) {
                         PubPriKey pubPriKey = JSON.parseObject(line, PubPriKey.class);
-                        System.out.println("PersistenceServiceInfo: 从文件中读取公私钥：" + JSON.toJSONString(pubPriKey));
+                        logger.info("从文件中读取公私钥成功！");
                         return pubPriKey;
                     } else {
-                        System.out.println("PersistenceServiceInfo: 文件中没有存有公私钥！");
+                        logger.info("文件中没有存有公私钥！");
                     }
                     reader.close();
                 }else {
                     //创建文件
                     dataFile.createNewFile();//如果已经存在文件其实也不会重新覆盖，等于没操作。
-                    System.out.println("PersistenceServiceInfo: 无此文件！已在节点目录下创建！");
+                    logger.info("无此文件！已在节点目录下创建！");
                 }
             }else {
                 peerDir.mkdirs();
                 dataFile.createNewFile();
-                System.out.println("PersistenceServiceInfo: 无此路径！已创建目录及文件！");
+                logger.info("无此路径！已创建目录及文件！");
             }
         }catch(Exception e) {
-            System.out.println("PersistenceServiceInfo: 加载数据出错！");
+            logger.error("加载密钥数据出错！");
             e.printStackTrace();
         }
         return null;
