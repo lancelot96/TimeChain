@@ -89,22 +89,22 @@ public class Broadcaster {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if(dateUtil.getCurrentSecond() % 60 == 12){
+                if(dateUtil.getCurrentSecond() == 0){
                     for (ISubscriber s : subscribers) {
                         s.doPerHour45();
                     }
                 }
-                else if(dateUtil.getCurrentSecond() % 60 == 24){
+                else if(dateUtil.getCurrentSecond() == 15){
                     for (ISubscriber s : subscribers) {
                         s.doPerHour59();
                     }
                 }
-                else if(dateUtil.getCurrentSecond() % 60 == 36){
+                else if(dateUtil.getCurrentSecond() == 30){
                     for (ISubscriber s : subscribers) {
                         s.doPerHour00();
                     }
                 }
-                else if(dateUtil.getCurrentSecond() % 60 == 48){
+                else if(dateUtil.getCurrentSecond() == 45){
                     for (ISubscriber s : subscribers) {
                         s.doPerHour01();
                     }
