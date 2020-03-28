@@ -232,6 +232,9 @@ public class P2PService implements ISubscriber {
      * 生成新区块
      */
     private void writeBlock(String localHost) {
+        if (viewState == ViewState.Running) {
+            return;
+        }
         viewState = ViewState.WritingBlock;
         blockService.generateNextBlock(blockService.getJSONData(acks), localHost);
         logger.info("new block generated successfully");
