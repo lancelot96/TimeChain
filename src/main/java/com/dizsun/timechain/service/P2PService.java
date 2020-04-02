@@ -190,6 +190,7 @@ public class P2PService implements ISubscriber {
                      */
                     switch (viewState) {
                         case Running:
+                            logger.info(config.getLocalHost() + "处于运行状态！不接收新区块！");
                             break;
                         case WritingBlock:
                         case WaitingACK:
@@ -209,6 +210,12 @@ public class P2PService implements ISubscriber {
                     }
                     break;
 
+                case R.SYNC_BLOCK:
+                    R.getBlockWriteLock().lock();
+                    stopWriteBlock();
+                    messageHelper.handleBlock(webSocket, message.getData());
+                    R.getBlockWriteLock().unlock();
+                    break;
             }
         } catch (Exception e) {
             logger.info("An error occurred while processing the message:" + e.getMessage());
@@ -290,6 +297,8 @@ public class P2PService implements ISubscriber {
     public void doPerHour45() {
         logger.info("enter time 45,the view number is " + R.getViewNumber());
         peerService.broadcast(messageHelper.queryAllPeers());
+        peerService.broadcast(messageHelper.syncBlock());
+        logger.info("同步区块完成！");
     }
 
     /**
