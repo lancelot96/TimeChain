@@ -1,5 +1,6 @@
 package com.dizsun.timechain.service;
 
+import com.alibaba.fastjson.JSON;
 import com.dizsun.timechain.component.Peer;
 import com.dizsun.timechain.constant.Config;
 import com.dizsun.timechain.interfaces.ICheckDelay;
@@ -165,14 +166,22 @@ public class PeerService implements ICheckDelay {
 
                 @Override
                 public void onClose(int i, String s, boolean b) {
-                    logger.warn("connection failed");
+                    logger.warn("connection closed");
+                    logger.info("peersArray before remove: " + JSON.toJSONString(getPeerArray()));
+                    logger.info("peersMap before remove: " + JSON.toJSONString(getCoPeerArray()));
                     removePeer(this);
+                    logger.info("peersArray after remove: " + JSON.toJSONString(getPeerArray()));
+                    logger.info("peersMap after remove: " + JSON.toJSONString(getCoPeerArray()));
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    logger.warn("connection failed");
+                    logger.warn("connection error");
+                    logger.info("peersArray before remove: " + JSON.toJSONString(getPeerArray()));
+                    logger.info("peersMap before remove: " + JSON.toJSONString(getCoPeerArray()));
                     removePeer(this);
+                    logger.info("peersArray after remove: " + JSON.toJSONString(getPeerArray()));
+                    logger.info("peersMap after remove: " + JSON.toJSONString(getCoPeerArray()));
                 }
             };
             socket.connect();
@@ -202,6 +211,14 @@ public class PeerService implements ICheckDelay {
             ps[i] = peers.get(i).getIp();
         }
         return ps;
+    }
+
+    public Object getCoPeerArray() {
+        List<String> cps = new ArrayList<>();
+        for (String host : peersMap.keySet()) {
+            cps.add(host);
+        }
+        return cps;
     }
 
     /**

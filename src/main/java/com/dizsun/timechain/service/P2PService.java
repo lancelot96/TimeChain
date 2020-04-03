@@ -80,7 +80,12 @@ public class P2PService implements ISubscriber {
 
             public void onClose(WebSocket webSocket, int i, String s, boolean b) {
                 logger.warn("connection failed to peer:" + webSocket.getRemoteSocketAddress());
+                logger.info("peersArray before remove: " + JSON.toJSONString(peerService.getPeerArray()));
+                logger.info("peersMap before remove: " + JSON.toJSONString(peerService.getCoPeerArray()));
                 peerService.removePeer(webSocket);
+                logger.info("current connected peers: " + peerService.getPeerArray());
+                logger.info("peersArray after remove: " + JSON.toJSONString(peerService.getPeerArray()));
+                logger.info("peersMap after remove: " + JSON.toJSONString(peerService.getCoPeerArray()));
             }
 
             public void onMessage(WebSocket webSocket, String s) {
@@ -89,8 +94,12 @@ public class P2PService implements ISubscriber {
             }
 
             public void onError(WebSocket webSocket, Exception e) {
-                logger.warn("connection failed to peer:" + webSocket.getRemoteSocketAddress());
+                logger.warn("connection error to peer:" + webSocket.getRemoteSocketAddress());
+                logger.info("peersArray before remove: " + JSON.toJSONString(peerService.getPeerArray()));
+                logger.info("peersMap before remove: " + JSON.toJSONString(peerService.getCoPeerArray()));
                 peerService.removePeer(webSocket);
+                logger.info("peersArray after remove: " + JSON.toJSONString(peerService.getPeerArray()));
+                logger.info("peersMap after remove: " + JSON.toJSONString(peerService.getCoPeerArray()));
             }
 
             public void onStart() {
@@ -212,7 +221,6 @@ public class P2PService implements ISubscriber {
 
                 case R.SYNC_BLOCK:
                     R.getBlockWriteLock().lock();
-                    stopWriteBlock();
                     messageHelper.handleBlock(webSocket, message.getData());
                     R.getBlockWriteLock().unlock();
                     break;
