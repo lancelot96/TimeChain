@@ -155,6 +155,8 @@ public class PeerService implements ICheckDelay {
                     if (!addPeer(this)) {
                         this.close();
                     }
+                    logger.info(localHost + " connects to " + getRemoteSocketAddress());
+                    logger.info("currenct peers: " + JSON.toJSONString(getPeerArray()));
                     write(this, messageHelper.queryLatestBlock());
                     write(this, messageHelper.queryAllPeers());
                 }
@@ -166,22 +168,16 @@ public class PeerService implements ICheckDelay {
 
                 @Override
                 public void onClose(int i, String s, boolean b) {
-                    logger.warn("connection closed");
-                    logger.info("peersArray before remove: " + JSON.toJSONString(getPeerArray()));
-                    logger.info("peersMap before remove: " + JSON.toJSONString(getCoPeerArray()));
+                    logger.warn(localHost + "connects to " + getRemoteSocketAddress() + " closed");
                     removePeer(this);
-                    logger.info("peersArray after remove: " + JSON.toJSONString(getPeerArray()));
-                    logger.info("peersMap after remove: " + JSON.toJSONString(getCoPeerArray()));
+                    logger.warn("remove " + getRemoteSocketAddress());
+                    logger.warn("currenct peers: " + JSON.toJSONString(getPeerArray()));
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    logger.warn("connection error");
-                    logger.info("peersArray before remove: " + JSON.toJSONString(getPeerArray()));
-                    logger.info("peersMap before remove: " + JSON.toJSONString(getCoPeerArray()));
+                    logger.error(localHost + "connection to " + getRemoteSocketAddress() + " error");
                     removePeer(this);
-                    logger.info("peersArray after remove: " + JSON.toJSONString(getPeerArray()));
-                    logger.info("peersMap after remove: " + JSON.toJSONString(getCoPeerArray()));
                 }
             };
             socket.connect();

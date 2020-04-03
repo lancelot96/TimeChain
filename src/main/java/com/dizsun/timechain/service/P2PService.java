@@ -76,16 +76,12 @@ public class P2PService implements ISubscriber {
                     peerService.removePeer(host);
                 }
                 peerService.addPeer(webSocket);
+                logger.info("current peers: " + JSON.toJSONString(peerService.getPeerArray()));
             }
 
             public void onClose(WebSocket webSocket, int i, String s, boolean b) {
                 logger.warn("connection failed to peer:" + webSocket.getRemoteSocketAddress());
-                logger.info("peersArray before remove: " + JSON.toJSONString(peerService.getPeerArray()));
-                logger.info("peersMap before remove: " + JSON.toJSONString(peerService.getCoPeerArray()));
                 peerService.removePeer(webSocket);
-                logger.info("current connected peers: " + peerService.getPeerArray());
-                logger.info("peersArray after remove: " + JSON.toJSONString(peerService.getPeerArray()));
-                logger.info("peersMap after remove: " + JSON.toJSONString(peerService.getCoPeerArray()));
             }
 
             public void onMessage(WebSocket webSocket, String s) {
@@ -94,12 +90,8 @@ public class P2PService implements ISubscriber {
             }
 
             public void onError(WebSocket webSocket, Exception e) {
-                logger.warn("connection error to peer:" + webSocket.getRemoteSocketAddress());
-                logger.info("peersArray before remove: " + JSON.toJSONString(peerService.getPeerArray()));
-                logger.info("peersMap before remove: " + JSON.toJSONString(peerService.getCoPeerArray()));
+                logger.error("connection error to peer:" + webSocket.getRemoteSocketAddress());
                 peerService.removePeer(webSocket);
-                logger.info("peersArray after remove: " + JSON.toJSONString(peerService.getPeerArray()));
-                logger.info("peersMap after remove: " + JSON.toJSONString(peerService.getCoPeerArray()));
             }
 
             public void onStart() {
@@ -199,7 +191,7 @@ public class P2PService implements ISubscriber {
                      */
                     switch (viewState) {
                         case Running:
-                            logger.info(config.getLocalHost() + "处于运行状态！不接收新区块！");
+                            logger.info(config.getLocalHost() + " is in running state! cannot receive new block!");
                             break;
                         case WritingBlock:
                         case WaitingACK:
@@ -306,7 +298,7 @@ public class P2PService implements ISubscriber {
         logger.info("enter time 45,the view number is " + R.getViewNumber());
         peerService.broadcast(messageHelper.queryAllPeers());
         peerService.broadcast(messageHelper.syncBlock());
-        logger.info("同步区块完成！");
+        logger.info("sync block finished！" + blockService.getLatestBlock().getIndex());
     }
 
     /**
