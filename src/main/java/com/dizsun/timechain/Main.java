@@ -2,11 +2,8 @@ package com.dizsun.timechain;
 
 import com.dizsun.timechain.constant.Broadcaster;
 import com.dizsun.timechain.constant.Config;
-import com.dizsun.timechain.constant.R;
 import com.dizsun.timechain.service.*;
-import com.dizsun.timechain.util.*;
 import org.apache.log4j.Logger;
-import com.dizsun.timechain.service.PersistenceService;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -33,15 +30,9 @@ public class Main {
         } else if (args.length == 6) {
             config.setHttpPort(Integer.parseInt(args[0]));
             config.setP2pPort(Integer.parseInt(args[1]));
-//            config.setTimeCenterListenPort(Integer.parseInt(args[2]));
-//            config.setNtpListenPort(Integer.parseInt(args[3]));
-//            config.setIndex(Integer.parseInt(args[4]));
             config.setIndex(Integer.parseInt(args[2]));
-//            config.setLocalHost(args[5]);
             config.setLocalHost(args[3]);
-//            config.setTimeCenterIp(args[6]);
             config.setTimeCenterIp(args[4]);
-//            config.setMainNode(args[7]);
             config.setMainNode(args[5]);
         } else {
             logger.error("传入参数错误，应传入参数为：\n" +
@@ -50,21 +41,16 @@ public class Main {
                     "  3.httpPort, p2pPort, index, localHost, timeCenterIp, mainNode");
             System.exit(0);
         }
-//        打印输出参数
-//        logger.info(config.getLocalHost());
-//        logger.info(config.getMainNode());
-//        logger.info(config.getTimeCenterIp());
-//        logger.info(config.getIndex());
-//        logger.info(config.getNtpListenPort());
-//        logger.info(config.getHttpPort());
-//        logger.info(config.getP2pPort());
-//        logger.info(config.getTimeCenterListenPort());
+        // 打印输出参数
+        logger.info("本节点IP：" + config.getLocalHost());
+        logger.info("主节点IP：" + config.getMainNode());
+        logger.info("授时中心IP：" + config.getTimeCenterIp());
+        logger.info("本节点index：" + config.getIndex());
+        logger.info("本节点HTTP端口：" + config.getHttpPort());
+        logger.info("本节点P2P端口" + config.getP2pPort());
         //初始化并启动各个组件
         try {
             CloseHook closeHook = new CloseHook();
-//            LogUtil.init(config.getIndex());
-//            NTPService ntpService = new NTPService();
-//            ntpService.start();
             NTPServer ntpServer = new NTPServer();
             ntpServer.start();
             Broadcaster broadcaster = new Broadcaster();
@@ -86,25 +72,3 @@ public class Main {
         }
     }
 }
-
-//        File dbFileFolder = new File("./db");
-//        if(!dbFileFolder.exists()){
-//            System.out.println("db文件夹不存在!");
-//            if(dbFileFolder.mkdir()){
-//                System.out.println("db文件夹创建成功!");
-//            }else {
-//                System.out.println("db文件夹创建失败!");
-//                return;
-//            }
-//        }
-//        File dbFile = new File("./db/blocks.db");
-//        if(!dbFile.exists()){
-//            System.out.println("db文件不存在!");
-//            try {
-//                SQLUtil sqlUtil=new SQLUtil();
-//                sqlUtil.initBlocks(null);
-//                System.out.println("db文件创建成功!");
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }

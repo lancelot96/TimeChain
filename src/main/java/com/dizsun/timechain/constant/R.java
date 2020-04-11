@@ -1,7 +1,5 @@
 package com.dizsun.timechain.constant;
 
-import com.dizsun.timechain.util.LogUtil;
-
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;

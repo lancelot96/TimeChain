@@ -155,8 +155,8 @@ public class PeerService implements ICheckDelay {
                     if (!addPeer(this)) {
                         this.close();
                     }
-                    logger.info(localHost + " connects to " + getRemoteSocketAddress());
-                    logger.info("currenct peers: " + JSON.toJSONString(getPeerArray()));
+                    logger.info("节点" + localHost + "客户端连接至节点" + getRemoteSocketAddress());
+                    logger.info("当前节点列表：" + JSON.toJSONString(getPeerArray()));
                     write(this, messageHelper.queryLatestBlock());
                     write(this, messageHelper.queryAllPeers());
                 }
@@ -168,15 +168,15 @@ public class PeerService implements ICheckDelay {
 
                 @Override
                 public void onClose(int i, String s, boolean b) {
-                    logger.warn(localHost + " connects to " + getRemoteSocketAddress() + " closed");
+                    logger.error("关闭代码：" + i + "，额外信息：" + s + "，是否被远端关闭：" + b);
+                    logger.error("节点" + localHost + "客户端连接至即节点" + getRemoteSocketAddress() + "关闭！");
                     removePeer(this);
-                    logger.warn("remove " + getRemoteSocketAddress());
-                    logger.warn("currenct peers: " + JSON.toJSONString(getPeerArray()));
+                    logger.error("当前连接节点列表：" + JSON.toJSONString(getPeerArray()));
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    logger.error(localHost + " connection to " + getRemoteSocketAddress() + " error");
+                    logger.error("节点" + localHost + "客户端连接至节点" + getRemoteSocketAddress() + "错误！");
                     removePeer(this);
                 }
             };

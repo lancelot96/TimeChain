@@ -13,7 +13,6 @@ public class Config {
     private String timeCenterIp;    // 时间中心的ip
     private int ntpListenPort = -1;    // 每个节点ntp服务的端口
     private int ntpReqTimeout = -1;    // NTP请求超时时间
-//    private int timeCenterListenPort = -1;    // 时间中心的端口
     private int httpPort = -1;    // http监听端口
     private int p2pPort = -1;    // p2p监听端口
     private int index = -1;    // 节点索引号
@@ -26,14 +25,6 @@ public class Config {
     public void setTimeCenterIp(String timeCenterIp) {
         this.timeCenterIp = timeCenterIp;
     }
-
-//    public void setNtpListenPort(int ntpListenPort) {
-//        this.ntpListenPort = ntpListenPort;
-//    }
-
-//    public void setTimeCenterListenPort(int timeCenterListenPort) {
-//        this.timeCenterListenPort = timeCenterListenPort;
-//    }
 
     public void setHttpPort(int httpPort) {
         this.httpPort = httpPort;
@@ -101,17 +92,6 @@ public class Config {
         return ntpReqTimeout;
     }
 
-//    public int getTimeCenterListenPort() {
-//        if (timeCenterListenPort == -1) {
-//            try {
-//                timeCenterListenPort = Integer.parseInt(properties.getProperty("time_center_listen_port"));
-//            } catch (NumberFormatException e) {
-//                timeCenterListenPort = R.DEFAULT_TIME_CENTER_LISTEN_PORT;
-//            }
-//        }
-//        return timeCenterListenPort;
-//    }
-
     public int getHttpPort() {
         if (httpPort == -1) {
             try {
@@ -164,7 +144,6 @@ public class Config {
      * 从config.properties文件中载入所有配置
      */
     public void init() {
-//        String filePath = System.getProperty("user.dir") + System.getProperty("file.separator") + "config.properties";
         String filePath = "config.properties";
         properties = new Properties();
 

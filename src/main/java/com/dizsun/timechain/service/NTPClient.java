@@ -7,6 +7,7 @@ import org.apache.commons.net.ntp.TimeStamp;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 public class NTPClient {
     private NTPUDPClient client;
@@ -29,8 +30,7 @@ public class NTPClient {
         return systemNtpTime.getTime();
     }
 
-    public String getNTPTime() {
-        String res = "获取同步时间失败！";
+    public Date getNTPTime() {
         try {
             TimeInfo timeInfo = this.client.getTime(this.inetAddress);
             timeInfo.computeDetails();
@@ -40,15 +40,12 @@ public class NTPClient {
 
                 long currentTime = System.currentTimeMillis();
                 TimeStamp atomicNtpTime = TimeStamp.getNtpTime(currentTime + offset);
-
-                System.out.println("Atomic time:\t" + "\t" + atomicNtpTime.toDateString());
-//            return atomicNtpTime.getTime();
-                res = atomicNtpTime.toDateString();
+                return atomicNtpTime.getDate();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return res;
+        return null;
     }
 }

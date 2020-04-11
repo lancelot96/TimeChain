@@ -1,6 +1,7 @@
 package com.dizsun.timechain.util;
 
 import com.dizsun.timechain.constant.Config;
+import com.dizsun.timechain.interfaces.JNative;
 import com.dizsun.timechain.service.NTPClient;
 import org.apache.commons.net.ntp.TimeStamp;
 
@@ -14,6 +15,7 @@ public class DateUtil {
     private Date date;
     private SimpleDateFormat sdf;
     private String time;
+    private JNative jNative;
 
     private DateUtil() {
     }
@@ -28,14 +30,8 @@ public class DateUtil {
 
     public void init() {
         time = TimeStamp.getNtpTime(System.currentTimeMillis()).toDateString();
+        jNative = NativeFactory.newNative();
     }
-
-//    public static DateUtil newDataUtil(){
-//        if (dateUtil == null) {
-//            dateUtil = new DateUtil();
-//        }
-//        return dateUtil;
-//    }
 
     public int getCurrentMinute(){
         sdf = new SimpleDateFormat("mm");
@@ -58,24 +54,13 @@ public class DateUtil {
         this.time = time;
     }
 
-    public String getTimeFromRC(){
-//        try {
-//            Config config = Config.getInstance();
-//            Socket socket = new Socket(config.getTimeCenterIp(), config.getTimeCenterListenPort());
-//            DataInputStream dis = new DataInputStream(socket.getInputStream());
-//            time = "" + dis.readLong();
-//            socket.close();
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//        return time;
+    public void getTimeFromRC(){
         Config config = Config.getInstance();
         try {
             NTPClient ntpClient = new NTPClient(config.getNtpReqTimeout(), config.getTimeCenterIp());
-            time = ntpClient.getNTPTime();
+            jNative.setLocalTime(ntpClient.getNTPTime());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        return time;
     }
 }

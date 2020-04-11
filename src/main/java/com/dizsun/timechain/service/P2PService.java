@@ -1,6 +1,5 @@
 package com.dizsun.timechain.service;
 
-
 import com.alibaba.fastjson.JSON;
 import com.dizsun.timechain.component.ACK;
 import com.dizsun.timechain.component.Message;
@@ -9,18 +8,16 @@ import com.dizsun.timechain.util.RSAUtil;
 import com.dizsun.timechain.interfaces.ISubscriber;
 import com.dizsun.timechain.constant.R;
 import com.dizsun.timechain.constant.ViewState;
+
 import org.apache.log4j.Logger;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
-
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * 包含了和其他节点之间通信的协议和对消息处理的业务逻辑
@@ -33,12 +30,6 @@ public class P2PService implements ISubscriber {
     private MessageHelper messageHelper;
     private Logger logger = Logger.getLogger(P2PService.class);
     private Config config = Config.getInstance();
-
-//    private long startTime = 0;
-//    private long endTime = 0;
-    //view number
-//    private int VN;
-    //节点数3N+0,1,2
     private int N = 1;
     private int stabilityValue = 128;
     private ViewState viewState = ViewState.Running;
@@ -60,7 +51,6 @@ public class P2PService implements ISubscriber {
         blockService.init();
         this.pool = Executors.newSingleThreadExecutor();
         this.acks = new ArrayList<>();
-//        this.VN = 0;
         this.rsaUtil = RSAUtil.getInstance();
         rsaUtil.init(config.getLocalHost() + "." + config.getP2pPort());
         this.peerService = PeerService.getInstance();
@@ -75,25 +65,23 @@ public class P2PService implements ISubscriber {
                     peerService.removePeer(host);
                 }
                 peerService.addPeer(webSocket);
-                logger.info("current peers: " + JSON.toJSONString(peerService.getPeerArray()));
+                logger.info("当前连接节点列表：" + JSON.toJSONString(peerService.getPeerArray()));
             }
 
             public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-                logger.warn("close code: " + i + ", additional info: " + s + ", closed by remote or not: " + b);
-                logger.warn("connection failed to peer:" + webSocket.getRemoteSocketAddress());
+                logger.error("关闭代码：" + i + "，额外信息：" + s + "，是否被远端关闭：" + b);
+                logger.error("服务端连接至" + webSocket.getRemoteSocketAddress() + "节点关闭！");
                 peerService.removePeer(webSocket);
-                logger.warn("current peers: " + JSON.toJSONString(peerService.getPeerArray()));
+                logger.error("当前连接节点列表：" + JSON.toJSONString(peerService.getPeerArray()));
             }
 
             public void onMessage(WebSocket webSocket, String s) {
-                // TODO
-                // using BlockingQueue to handle message
-
-                pool.execute(new HandleMsgThread(webSocket, s));
+                Thread thread = new HandleMsgThread(webSocket, s);
+                pool.execute(thread);
             }
 
             public void onError(WebSocket webSocket, Exception e) {
-                logger.error("connection error to peer:" + webSocket.getRemoteSocketAddress());
+                logger.error("服务端连接至" + webSocket.getRemoteSocketAddress() + "节点错误！");
                 peerService.removePeer(webSocket);
             }
 
@@ -102,7 +90,7 @@ public class P2PService implements ISubscriber {
             }
         };
         socket.start();
-        logger.info("listening websocket p2p port on: " + port);
+        logger.info("在端口" + port + "监听P2P连接......");
     }
 
     /**
@@ -115,17 +103,6 @@ public class P2PService implements ISubscriber {
         try {
             Message message = JSON.parseObject(s, Message.class);
             if (message.getSourceIp().equals(config.getLocalHost())) return;
-//            if (message.getViewNumber() < R.getViewNumber()) {
-//                webSocket.send(messageHelper.responseAllBlocks());
-//                logger.info("the message view number is less than us:" + message.getViewNumber() + "<" + R.getViewNumber());
-//                logger.info("type:"+message.getType());
-//                return;
-//            } else if (message.getViewNumber() > R.getViewNumber() && message.getType() != R.RESPONSE_ALL_BLOCKS) {
-//                R.setViewNumber(message.getViewNumber());
-//                webSocket.send(messageHelper.queryAllBlock());
-//                logger.info("the message view number is more than us:" + message.getViewNumber() + ">" + R.getViewNumber());
-//                return;
-//            }
             switch (message.getType()) {
                 case R.QUERY_LATEST_BLOCK:
                     logger.info("a request for newest block");
