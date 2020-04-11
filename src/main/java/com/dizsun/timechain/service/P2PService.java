@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSON;
 import com.dizsun.timechain.component.ACK;
 import com.dizsun.timechain.component.Message;
 import com.dizsun.timechain.constant.Config;
-import com.dizsun.timechain.util.LogUtil;
 import com.dizsun.timechain.util.RSAUtil;
 import com.dizsun.timechain.interfaces.ISubscriber;
 import com.dizsun.timechain.constant.R;
@@ -18,8 +17,10 @@ import org.java_websocket.server.WebSocketServer;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * 包含了和其他节点之间通信的协议和对消息处理的业务逻辑
@@ -43,8 +44,6 @@ public class P2PService implements ISubscriber {
     private ViewState viewState = ViewState.Running;
     private List<ACK> acks;
 
-    private long consensusTime = 0;
-
     private static class Holder {
         private static P2PService p2pService = new P2PService();
     }
@@ -59,7 +58,7 @@ public class P2PService implements ISubscriber {
     public void initP2PServer(int port) {
         this.blockService = BlockService.getInstance();
         blockService.init();
-        this.pool = Executors.newCachedThreadPool();
+        this.pool = Executors.newSingleThreadExecutor();
         this.acks = new ArrayList<>();
 //        this.VN = 0;
         this.rsaUtil = RSAUtil.getInstance();
@@ -80,13 +79,17 @@ public class P2PService implements ISubscriber {
             }
 
             public void onClose(WebSocket webSocket, int i, String s, boolean b) {
+                logger.warn("close code: " + i + ", additional info: " + s + ", closed by remote or not: " + b);
                 logger.warn("connection failed to peer:" + webSocket.getRemoteSocketAddress());
                 peerService.removePeer(webSocket);
+                logger.warn("current peers: " + JSON.toJSONString(peerService.getPeerArray()));
             }
 
             public void onMessage(WebSocket webSocket, String s) {
-                Thread thread = new HandleMsgThread(webSocket, s);
-                pool.execute(thread);
+                // TODO
+                // using BlockingQueue to handle message
+
+                pool.execute(new HandleMsgThread(webSocket, s));
             }
 
             public void onError(WebSocket webSocket, Exception e) {

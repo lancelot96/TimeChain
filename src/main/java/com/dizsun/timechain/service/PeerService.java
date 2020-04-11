@@ -168,7 +168,7 @@ public class PeerService implements ICheckDelay {
 
                 @Override
                 public void onClose(int i, String s, boolean b) {
-                    logger.warn(localHost + "connects to " + getRemoteSocketAddress() + " closed");
+                    logger.warn(localHost + " connects to " + getRemoteSocketAddress() + " closed");
                     removePeer(this);
                     logger.warn("remove " + getRemoteSocketAddress());
                     logger.warn("currenct peers: " + JSON.toJSONString(getPeerArray()));
@@ -176,7 +176,7 @@ public class PeerService implements ICheckDelay {
 
                 @Override
                 public void onError(Exception e) {
-                    logger.error(localHost + "connection to " + getRemoteSocketAddress() + " error");
+                    logger.error(localHost + " connection to " + getRemoteSocketAddress() + " error");
                     removePeer(this);
                 }
             };
