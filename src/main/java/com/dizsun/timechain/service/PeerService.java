@@ -2,23 +2,17 @@ package com.dizsun.timechain.service;
 
 import com.alibaba.fastjson.JSON;
 import com.dizsun.timechain.component.Peer;
-import com.dizsun.timechain.constant.Config;
 import com.dizsun.timechain.interfaces.ICheckDelay;
-import com.dizsun.timechain.util.LogUtil;
 import org.apache.log4j.Logger;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +23,7 @@ import java.util.regex.Pattern;
 public class PeerService implements ICheckDelay {
     private String localHost;
     private ConcurrentHashMap<String, Peer> peersMap;
-    private ArrayList<Peer> peers;
+    private CopyOnWriteArrayList<Peer> peers;
     private MessageHelper messageHelper;
     private Logger logger = Logger.getLogger(PeerService.class);
 
@@ -47,7 +41,7 @@ public class PeerService implements ICheckDelay {
     public void init(String localHost) {
         peersMap = new ConcurrentHashMap<>();
         messageHelper = MessageHelper.getInstance();
-        peers = new ArrayList<>();
+        peers = new CopyOnWriteArrayList<>();
         this.localHost = localHost;
     }
 
