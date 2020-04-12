@@ -118,7 +118,6 @@ public class PeerService implements ICheckDelay {
      */
     public void broadcast(String msg) {
         peers.forEach(v -> write(v.getWebSocket(), msg));
-        logger.info("[broadcast]广播完毕！");
     }
 
     /**
@@ -152,31 +151,31 @@ public class PeerService implements ICheckDelay {
                     if (!addPeer(this)) {
                         this.close();
                     }
-                    logger.info("[line 155 connectToPeer.onOpen]客户端" + localHost + "连接至节点" + getRemoteSocketAddress().getHostString());
-                    logger.info("[line 156 connectToPeer.onOpen]当前节点列表：" + JSON.toJSONString(getPeerArray()));
+                    logger.info("[connectToPeer.onOpen]客户端" + localHost + "连接至节点" + getRemoteSocketAddress().getHostString());
+                    logger.info("[connectToPeer.onOpen]当前节点列表：" + JSON.toJSONString(getPeerArray()));
                     write(this, messageHelper.queryLatestBlock());
                     write(this, messageHelper.queryAllPeers());
                 }
 
                 @Override
                 public void onMessage(String s) {
-                    logger.info("[line 163 connectToPeer.onMessage]处理新接收的消息......");
+                    logger.info("[connectToPeer.onMessage]处理新接收的消息......");
                     P2PService.getInstance().handleMsgThread(this, s);
                 }
 
                 @Override
                 public void onClose(int i, String s, boolean b) {
-                    logger.error("[line 169 connectToPeer.onClose]客户端" + localHost + "连接至即节点" + getRemoteSocketAddress().getHostString() + "关闭！");
-                    logger.error("[line 170 connectToPeer.onClose]关闭代码：" + i + "，额外信息：" + s + "，是否被远端关闭：" + b);
+                    logger.error("[connectToPeer.onClose]客户端" + localHost + "连接至即节点" + getRemoteSocketAddress().getHostString() + "关闭！");
+                    logger.error("[connectToPeer.onClose]关闭代码：" + i + "，额外信息：" + s + "，是否被远端关闭：" + b);
                     removePeer(this);
-                    logger.error("[line 172 connectToPeer.onClose]移除该连接后节点列表：" + JSON.toJSONString(getPeerArray()));
+                    logger.error("[connectToPeer.onClose]移除该连接后节点列表：" + JSON.toJSONString(getPeerArray()));
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    logger.error("[line 177 connectToPeer.onError]客户端" + localHost + "连接至节点" + getRemoteSocketAddress().getHostString() + "错误！");
+                    logger.error("[connectToPeer.onError]客户端" + localHost + "连接至节点" + getRemoteSocketAddress().getHostString() + "错误！");
                     removePeer(this);
-                    logger.error("[line 179 connectToPeer.onError]移除该连接后节点列表：" + JSON.toJSONString(getPeerArray()));
+                    logger.error("[connectToPeer.onError]移除该连接后节点列表：" + JSON.toJSONString(getPeerArray()));
                 }
             };
             socket.connect();
