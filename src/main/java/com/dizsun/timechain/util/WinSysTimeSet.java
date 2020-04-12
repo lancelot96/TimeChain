@@ -23,10 +23,9 @@ public class WinSysTimeSet implements JNative {
     }
 
     @Override
-    public void setLocalTime(Date date) {
+    public boolean setLocalTime(Date date) {
         if (date == null) {
-            logger.error("获取时间失败！");
-            return;
+            return false;
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -41,5 +40,7 @@ public class WinSysTimeSet implements JNative {
         st.wMilliseconds = (short)calendar.get(Calendar.MILLISECOND);
 
         kernel32Instance.SetLocalTime(st);
+
+        return true;
     }
 }

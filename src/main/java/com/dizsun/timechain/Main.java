@@ -47,7 +47,7 @@ public class Main {
         logger.info("授时中心IP：" + config.getTimeCenterIp());
         logger.info("本节点index：" + config.getIndex());
         logger.info("本节点HTTP端口：" + config.getHttpPort());
-        logger.info("本节点P2P端口" + config.getP2pPort());
+        logger.info("本节点P2P端口：" + config.getP2pPort());
         //初始化并启动各个组件
         try {
             CloseHook closeHook = new CloseHook();

@@ -65,24 +65,26 @@ public class P2PService implements ISubscriber {
                     peerService.removePeer(host);
                 }
                 peerService.addPeer(webSocket);
-                logger.info("当前连接节点列表：" + JSON.toJSONString(peerService.getPeerArray()));
+                logger.info("[line 68 initP2PServer.onOpen]当前连接节点列表：" + JSON.toJSONString(peerService.getPeerArray()));
             }
 
             public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-                logger.error("关闭代码：" + i + "，额外信息：" + s + "，是否被远端关闭：" + b);
-                logger.error("服务端连接至" + webSocket.getRemoteSocketAddress() + "节点关闭！");
+                logger.error("[line 72 initP2PServer.onClose]服务端连接至" + webSocket.getRemoteSocketAddress().getHostString() + "节点关闭！");
+                logger.error("[line 73 initP2PServer.onClose]关闭代码：" + i + "，额外信息：" + s + "，是否被远端关闭：" + b);
                 peerService.removePeer(webSocket);
-                logger.error("当前连接节点列表：" + JSON.toJSONString(peerService.getPeerArray()));
+                logger.error("[line 75 initP2PServer.onClose]移除该连接后节点列表：" + JSON.toJSONString(peerService.getPeerArray()));
             }
 
             public void onMessage(WebSocket webSocket, String s) {
                 Thread thread = new HandleMsgThread(webSocket, s);
                 pool.execute(thread);
+                logger.info("[line 81 handleMessage.onMessage]收到新的消息，开启线程" + thread.getName() + "处理......");
             }
 
             public void onError(WebSocket webSocket, Exception e) {
-                logger.error("服务端连接至" + webSocket.getRemoteSocketAddress() + "节点错误！");
+                logger.error("[line 85 initP2PServer.onError]服务端连接至" + webSocket.getRemoteSocketAddress().getHostString() + "节点错误！");
                 peerService.removePeer(webSocket);
+                logger.error("[line 87 initP2PServer.onError]移除该连接后节点列表：" + JSON.toJSONString(peerService.getPeerArray()));
             }
 
             public void onStart() {
@@ -105,36 +107,36 @@ public class P2PService implements ISubscriber {
             if (message.getSourceIp().equals(config.getLocalHost())) return;
             switch (message.getType()) {
                 case R.QUERY_LATEST_BLOCK:
-                    logger.info("a request for newest block");
+                    logger.info("[handleMessage]请求新区块......");
                     peerService.write(webSocket, messageHelper.responseLatestBlock());
                     break;
                 case R.QUERY_ALL_BLOCKS:
-                    logger.info("a request for all blocks");
+                    logger.info("[handleMessage]请求所有区块......");
                     peerService.write(webSocket, messageHelper.responseAllBlocks());
                     break;
                 case R.QUERY_ALL_PEERS:
-                    logger.info("a request for newest peers list");
+                    logger.info("[handleMessage]请求最新的节点列表......");
                     peerService.write(webSocket, messageHelper.responseAllPeers());
                     messageHelper.handlePeersResponse(message.getData());
                     break;
                 case R.RESPONSE_ALL_BLOCKS:
-                    logger.info("received blocks list");
+                    logger.info("[handleMessage]收到新的区块链......");
                     messageHelper.handleBlockChain(webSocket, message.getData());
                     break;
                 case R.RESPONSE_ALL_PEERS:
-                    logger.info("received peers list");
+                    logger.info("[handleMessage]收到新的节点列表......");
                     messageHelper.handlePeersResponse(message.getData());
                     break;
                 case R.REQUEST_NEGOTIATION:
                     /**
                      * 若对方同意开始公示,则广播ACK
                      */
-                    logger.info("received a request for negotiation");
+                    logger.info("[line 134 handleMessage]收到共识请求......");
                     N = (peerService.length() + 1) / 3;
-                    logger.info("the N is " + N);
+                    logger.info("[line 136 handleMessage]当前连接节点数目的1/3为：" + N);
                     if (viewState == ViewState.WaitingNegotiation) {
                         R.beginConsensus();
-                        logger.info("broad ack");
+                        logger.info("[line 139 handleMessage]广播ACK......");
                         peerService.broadcast(messageHelper.responseACK());
                         viewState = ViewState.WaitingACK;
                     }
@@ -143,9 +145,9 @@ public class P2PService implements ISubscriber {
                     /**
                      * 收到对方的ACK后进行判断是否满足写区块条件
                      */
-                    logger.info("received an ack");
+                    logger.info("[line 148 handleMessage]收到一个ACK......");
                     ACK tempACK = new ACK(message.getData());
-                    logger.info("checking the ack correctness:" + checkACK(tempACK));
+                    logger.info("[line 150 handleMessage]收到的ACK的正确性：" + checkACK(tempACK));
                     if (viewState == ViewState.WaitingACK && checkACK(tempACK)) {
                         if (stabilityValue == 1) {
                             peerService.updateSI(webSocket, 1);
@@ -154,8 +156,8 @@ public class P2PService implements ISubscriber {
                             stabilityValue -= 2;
                         }
                         acks.add(tempACK);
-                        logger.info("the number of received ack: " + acks.size());
-                        logger.info("Check if the conditions for writing a block are met：" + (acks.size() >= 2 && acks.size() >= 2 * N));
+                        logger.info("[line 159 handleMessage]当前收到的ACK总数：" + acks.size());
+                        logger.info("[line 160 handleMessage]是否达到写区块条件：" + (acks.size() >= 2 && acks.size() >= 2 * N));
                         if (acks.size() >= 2 && acks.size() >= 2 * N) {
                             R.getBlockWriteLock().lock();
                             writeBlock(config.getLocalHost());
@@ -171,7 +173,7 @@ public class P2PService implements ISubscriber {
                      */
                     switch (viewState) {
                         case Running:
-                            logger.info(config.getLocalHost() + " is in running state! cannot receive new block!");
+                            logger.info("[line 176 handleMessage]本节点正处于running状态！不能接收新区块！");
                             break;
                         case WritingBlock:
                         case WaitingACK:
@@ -198,7 +200,7 @@ public class P2PService implements ISubscriber {
                     break;
             }
         } catch (Exception e) {
-            logger.info("An error occurred while processing the message:" + e.getMessage());
+            logger.info("[handleMessage]处理信息时发生错误：" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -224,7 +226,7 @@ public class P2PService implements ISubscriber {
         }
         viewState = ViewState.WritingBlock;
         blockService.generateNextBlock(blockService.getJSONData(acks), localHost);
-        logger.info("new block generated successfully");
+        logger.info("[writeBlock]生成新区块成功！");
     }
 
     /**
@@ -235,6 +237,7 @@ public class P2PService implements ISubscriber {
     public void handleMsgThread(WebSocket webSocket, String msg) {
         Thread thread = new HandleMsgThread(webSocket, msg);
         pool.execute(thread);
+        logger.info("[handleMsgThread]客户端收到新的消息，开启线程" + thread.getName() + "处理......");
     }
 
     /**
@@ -257,7 +260,7 @@ public class P2PService implements ISubscriber {
      */
     @Override
     public void doPerHour00() {
-        logger.info("enter time 00,the view number is " + R.getViewNumber());
+        logger.info("[doPerHour00]进入时间点tc，视图编号：" + R.getViewNumber());
         switch (this.viewState) {
             case WaitingNegotiation:
                 R.beginConsensus();
@@ -275,10 +278,10 @@ public class P2PService implements ISubscriber {
      */
     @Override
     public void doPerHour45() {
-        logger.info("enter time 45,the view number is " + R.getViewNumber());
+        logger.info("[doPerHour45]进入running状态，视图编号：" + R.getViewNumber());
         peerService.broadcast(messageHelper.queryAllPeers());
         peerService.broadcast(messageHelper.syncBlock());
-        logger.info("sync block finished！" + blockService.getLatestBlock().getIndex());
+        logger.info("[doPerHour45]同步最新区块完成！最新区块索引：" + blockService.getLatestBlock().getIndex());
     }
 
     /**
@@ -287,7 +290,7 @@ public class P2PService implements ISubscriber {
     @Override
     public void doPerHour59() {
         N = (peerService.length() + 1) / 3;
-        logger.info("enter time 59,the view number is " + R.getViewNumber() + " and the number of node is " + peerService.length());
+        logger.info("[doPerHour59]进入时间点tp，视图编号：" + R.getViewNumber() + "，当前连接节点数目：" + peerService.length());
         this.viewState = ViewState.WaitingNegotiation;
     }
 
@@ -296,7 +299,7 @@ public class P2PService implements ISubscriber {
      */
     @Override
     public void doPerHour01() {
-        logger.info("enter time 01,the view number is " + R.getViewNumber());
+        logger.info("[doPerHour01]进入时间点te，视图编号：" + R.getViewNumber());
         // 此处加锁是因为handleMessage中的RESPONSE_ACK中需要判定acks，因此和这里会相互影响
         R.getBlockWriteLock().lock();
         this.viewState = ViewState.Running;

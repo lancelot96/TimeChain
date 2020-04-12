@@ -39,7 +39,7 @@ public class HTTPService {
         this.peerService = PeerService.getInstance();
         try {
             Server server = new Server(port);
-            logger.info("listening http port on: " + port);
+            logger.info("在端口" + port + "监听HTTP请求......");
             ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
             context.setContextPath("/");
             server.setHandler(context);
@@ -57,7 +57,7 @@ public class HTTPService {
             server.start();
             server.join();
         } catch (Exception e) {
-            logger.error("init http server is error:" + e.getMessage());
+            logger.error("HTTP服务启动错误：" + e.getMessage());
         }
     }
 

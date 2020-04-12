@@ -10,13 +10,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class LinuxSysTimeSet implements JNative {
-    private Logger logger = Logger.getLogger(LinuxSysTimeSet.class);
-
     @Override
-    public void setLocalTime(Date date) {
+    public boolean setLocalTime(Date date) {
         if (date == null) {
-            logger.error("获取时间失败！");
-            return;
+            return false;
         }
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         String dateNow = formatter.format(date);
@@ -31,6 +28,7 @@ public class LinuxSysTimeSet implements JNative {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return true;
     }
 }
 
@@ -38,6 +36,7 @@ class StreamGobbler extends Thread {
     InputStream is;
     String type;
     OutputStream os;
+    Logger logger = Logger.getLogger(LinuxSysTimeSet.class);
 
     StreamGobbler(InputStream is, String type) {
         this(is, type, null);
@@ -65,7 +64,11 @@ class StreamGobbler extends Thread {
                 if (pw != null){
                     pw.println(line);
                 }
-                System.out.println(type + ">" + line);
+                if (type.equals("ERROR")) {
+                    logger.error(type + ">" + line);
+                } else {
+                    logger.info(type + ">" + line);
+                }
             }
             if (pw != null) {
                 pw.flush();

@@ -1,6 +1,7 @@
 package com.dizsun.timechain.util;
 
 import com.dizsun.timechain.constant.Config;
+import com.dizsun.timechain.constant.R;
 import com.dizsun.timechain.interfaces.JNative;
 import com.dizsun.timechain.service.NTPClient;
 import org.apache.commons.net.ntp.TimeStamp;
@@ -29,7 +30,9 @@ public class DateUtil {
     }
 
     public void init() {
-        time = TimeStamp.getNtpTime(System.currentTimeMillis()).toDateString();
+        sdf = new SimpleDateFormat(R.NTP_DATE_FORMAT);
+        date = new Date();
+        time = sdf.format(date);
         jNative = NativeFactory.newNative();
     }
 
@@ -54,13 +57,20 @@ public class DateUtil {
         this.time = time;
     }
 
-    public void getTimeFromRC(){
+    public String getTimeFromRC(){
         Config config = Config.getInstance();
         try {
             NTPClient ntpClient = new NTPClient(config.getNtpReqTimeout(), config.getTimeCenterIp());
-            jNative.setLocalTime(ntpClient.getNTPTime());
+            date = ntpClient.getNTPTime();
+            boolean flag = jNative.setLocalTime(date);
+            if (!flag) {
+                return "获取授时失败！";
+            }
+            sdf = new SimpleDateFormat(R.NTP_DATE_FORMAT);
+            time = sdf.format(date);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+        return time;
     }
 }

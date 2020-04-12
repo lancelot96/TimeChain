@@ -7,5 +7,5 @@ public interface JNative {
      * 设置系统时间
      * @param date Date
      */
-    void setLocalTime(Date date);
+    boolean setLocalTime(Date date);
 }
