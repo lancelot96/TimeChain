@@ -161,7 +161,17 @@ public class PeerService implements ICheckDelay {
                     logger.error("[connectToPeer.onClose]客户端" + localHost + "连接至即节点" + getRemoteSocketAddress().getHostString() + "关闭！");
                     logger.error("[connectToPeer.onClose]关闭代码：" + i + "，额外信息：" + s + "，是否被远端关闭：" + b);
                     removePeer(this);
-                    logger.error("[connectToPeer.onClose]移除该连接后节点列表：" + JSON.toJSONString(getPeerArray()));
+//                    new Thread(() -> {
+//                        try {
+//                            logger.error("[connectToPeer.onClose]尝试重连...");
+//                            if (!this.reconnectBlocking()) {
+//                                removePeer(this);
+//                                logger.error("[connectToPeer.onClose]尝试重连失败！移除该连接后节点列表：" + JSON.toJSONString(getPeerArray()));
+//                            }
+//                        } catch (InterruptedException e1) {
+//                            e1.printStackTrace();
+//                        }
+//                    }).start();
                 }
 
                 @Override
@@ -172,6 +182,7 @@ public class PeerService implements ICheckDelay {
                 }
             };
             socket.connect();
+
         } catch (URISyntaxException e) {
             logger.warn("[connectToPeer]P2P连接错误：" + e.getMessage());
         }

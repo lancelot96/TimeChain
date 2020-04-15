@@ -21,7 +21,7 @@ public class R {
     public static final int REQUEST_NEGOTIATION = 5;    // 开始共识请求
     public static final int RESPONSE_ACK = 6;    // 响应ACK
     public static final int RESPONSE_BLOCK = 8;    // 返回新区块
-    public static final int SYNC_BLOCK = 9;
+    public static final int SYNC = 9;
 
     /**
      * config文件中的默认值，如果无法从properties文件读取相应配置，则取此默认值

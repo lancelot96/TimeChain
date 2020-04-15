@@ -28,22 +28,22 @@ public class Broadcaster {
             public void run() {
                 if(dateUtil.getCurrentSecond() == 0){
                     for (ISubscriber s : subscribers) {
-                        s.doPerHour45();
+                        s.doPerRunning();
                     }
                 }
                 else if(dateUtil.getCurrentSecond() == 15){
                     for (ISubscriber s : subscribers) {
-                        s.doPerHour59();
+                        s.doPerTP();
                     }
                 }
                 else if(dateUtil.getCurrentSecond() == 30){
                     for (ISubscriber s : subscribers) {
-                        s.doPerHour00();
+                        s.doPerTC();
                     }
                 }
                 else if(dateUtil.getCurrentSecond() == 45){
                     for (ISubscriber s : subscribers) {
-                        s.doPerHour01();
+                        s.doPerTE();
                     }
                 }
             }

@@ -67,10 +67,10 @@ public class MessageHelper {
         return JSON.toJSONString(new Message(R.RESPONSE_BLOCK, JSON.toJSONString(block), config.getLocalHost(), R.getAndIncrementMessageId()));
     }
 
-    public String syncBlock() {
-        Block block = blockService.getLatestBlock();
-        return JSON.toJSONString(new Message(R.SYNC_BLOCK, JSON.toJSONString(block), config.getLocalHost(), R.getAndIncrementMessageId()));
-    }
+//    public String syncBlock() {
+//        Block block = blockService.getLatestBlock();
+//        return JSON.toJSONString(new Message(R.SYNC, JSON.toJSONString(block), config.getLocalHost(), R.getAndIncrementMessageId()));
+//    }
 
 //    public String responseBlock() {
 //        return JSON.toJSONString(new Message(R.RESPONSE_BLOCK, JSON.toJSONString(blockService.getBlockChain()), config.getLocalHost(), R.getAndIncrementMessageId()));

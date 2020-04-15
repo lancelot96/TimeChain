@@ -48,6 +48,10 @@ public class DateUtil {
         return Integer.parseInt(sdf.format(date));
     }
 
+//    public int getCurrentTime() {
+//
+//    }
+
     public String getTime() {
         time = TimeStamp.getNtpTime(System.currentTimeMillis()).toDateString();
         return time;

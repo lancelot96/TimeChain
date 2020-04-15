@@ -1,11 +1,11 @@
 package com.dizsun.timechain.interfaces;
 
 public interface ISubscriber {
-    void doPerHour00();
+    void doPerTC();
 
-    void doPerHour59();
+    void doPerTP();
 
-    void doPerHour01();
+    void doPerTE();
 
-    void doPerHour45();
+    void doPerRunning();
 }
