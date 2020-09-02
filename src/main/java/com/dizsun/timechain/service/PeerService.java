@@ -161,6 +161,7 @@ public class PeerService implements ICheckDelay {
                     logger.error("[connectToPeer.onClose]客户端" + localHost + "连接至即节点" + getRemoteSocketAddress().getHostString() + "关闭！");
                     logger.error("[connectToPeer.onClose]关闭代码：" + i + "，额外信息：" + s + "，是否被远端关闭：" + b);
                     removePeer(this);
+                    logger.error("[connectToPeer.onClose]移除该连接后节点列表：" + JSON.toJSONString(getPeerArray()));
 //                    new Thread(() -> {
 //                        try {
 //                            logger.error("[connectToPeer.onClose]尝试重连...");
